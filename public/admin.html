@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10272a" />
+    <title>JalRakshak — Moderation dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 18px 60px; }
+      .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+      .admin-head h1 { font-size: 20px; letter-spacing: -.02em; margin: 0; }
+      .admin-head .sub { color: var(--ink-soft); font-size: 12px; margin-top: 4px; }
+      .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+      .stat { background: #fff; border: 1px solid #e4eee9; border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+      .stat b { display: block; font-size: 26px; letter-spacing: -.03em; }
+      .stat span { color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+      .stat.red b { color: var(--red); } .stat.amber b { color: #d99a2b; } .stat.green b { color: var(--green); }
+      .panel { background: #fff; border: 1px solid #e4eee9; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+      .panel-head { padding: 16px 18px; border-bottom: 1px solid #eef4f0; display: flex; align-items: center; justify-content: space-between; }
+      .panel-head h2 { font-size: 14px; margin: 0; }
+      table { width: 100%; border-collapse: collapse; font-size: 12px; }
+      th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid #f1f6f2; vertical-align: top; }
+      th { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+      .pill { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 10px; font-weight: 800; }
+      .pill.green { background: var(--green-pale); color: #2f7d59; }
+      .pill.amber { background: var(--amber-pale); color: #b57b16; }
+      .pill.red { background: var(--red-pale); color: #b14a3f; }
+      .pill.removed { background: #eceff0; color: #6b7776; }
+      .row-actions button { margin-right: 6px; font-size: 11px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: #fbfefd; cursor: pointer; }
+      .row-actions button.approve { color: #2f7d59; } .row-actions button.remove { color: #b14a3f; }
+      .token-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+      .token-bar input { flex: 1; min-width: 220px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 12px; }
+      .empty { padding: 28px; text-align: center; color: var(--muted); font-size: 13px; }
+      .disclaimer { margin-top: 18px; color: var(--muted); font-size: 11px; }
+    </style>
+  </head>
+  <body style="background: var(--paper);">
+    <div class="admin-wrap">
+      <div class="admin-head">
+        <div>
+          <h1>JalRakshak · Moderation dashboard</h1>
+          <div class="sub">Mangaluru community flood reports — internal review tool</div>
+        </div>
+        <button class="primary-button" id="refreshBtn">Refresh</button>
+      </div>
+
+      <div class="token-bar">
+        <input id="adminToken" placeholder="Admin token (X-Admin-Token)" />
+        <button class="primary-button" id="saveToken">Save token</button>
+        <span class="sub" id="tokenState"></span>
+      </div>
+
+      <div class="stat-grid" id="stats"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Moderation queue</h2>
+          <span class="sub">Most-disputed and lowest-confidence first</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr><th>Place</th><th>Severity</th><th>Depth</th><th>Conf.</th><th>Confirms</th><th>Disputes</th><th>Age</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="queueBody"></tbody>
+          </table>
+        </div>
+        <div class="empty hidden" id="queueEmpty">Nothing in the queue.</div>
+      </div>
+
+      <div class="disclaimer">
+        Community-reported data is not an official warning. Moderators should verify against local knowledge
+        and escalate life-threatening situations to the district administration / emergency services immediately.
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      let token = sessionStorage.getItem('jalrakshak.admin') || 'admin-dev-token';
+      $('#adminToken').value = token;
+
+      $('#saveToken').onclick = () => {
+        token = $('#adminToken').value.trim();
+        sessionStorage.setItem('jalrakshak.admin', token);
+        $('#tokenState').textContent = 'Saved';
+        loadAll();
+      };
+
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+      async function api(path, opts = {}) {
+        const res = await fetch(path, {
+          ...opts,
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token, ...(opts.headers || {}) }
+        });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.status);
+        return res.json();
+      }
+
+      function pill(level) {
+        const cls = level === 'red' ? 'red' : level === 'amber' ? 'amber' : 'green';
+        const txt = level === 'red' ? 'AVOID' : level === 'amber' ? 'CAUTION' : 'PASSABLE';
+        return `<span class="pill ${cls}">${txt}</span>`;
+      }
+
+      async function loadStats() {
+        try {
+          const s = await api('/api/admin/stats');
+          $('#stats').innerHTML = `
+            <div class="stat"><b>${s.activeReports}</b><span>Active reports</span></div>
+            <div class="stat red"><b>${s.byLevel.red || 0}</b><span>Avoid (red)</span></div>
+            <div class="stat amber"><b>${s.byLevel.amber || 0}</b><span>Caution (amber)</span></div>
+            <div class="stat green"><b>${s.byLevel.green || 0}</b><span>Passable</span></div>
+            <div class="stat"><b>${s.reportsLast24h}</b><span>Last 24h</span></div>
+            <div class="stat"><b>${s.hotspots}</b><span>Seed hotspots</span></div>`;
+        } catch (e) { $('#stats').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+      }
+
+      async function loadQueue() {
+        try {
+          const { reports } = await api('/api/admin/queue');
+          const body = $('#queueBody');
+          $('#queueEmpty').classList.toggle('hidden', reports.length > 0);
+          body.innerHTML = reports.map((r) => `
+            <tr data-id="${r.id}">
+              <td><strong>${esc(r.place)}</strong><br><small style="color:var(--muted)">${r.lat.toFixed(3)}, ${r.lng.toFixed(3)}</small></td>
+              <td>${pill(r.level)}</td>
+              <td>${esc(r.depthLabel)}</td>
+              <td>${(r.confidence * 100).toFixed(0)}%</td>
+              <td>${r.confirmations}</td>
+              <td>${r.disputes}</td>
+              <td>${esc(r.age)}</td>
+              <td><span class="pill ${r.status === 'active' ? 'green' : 'removed'}">${r.status}</span></td>
+              <td class="row-actions">
+                <button class="approve" data-act="approve">Approve</button>
+                <button class="remove" data-act="remove">Remove</button>
+              </td>
+            </tr>`).join('');
+          document.querySelectorAll('.row-actions button').forEach((b) => {
+            b.onclick = async () => {
+              const id = b.closest('tr').dataset.id;
+              await api(`/api/admin/moderate/${id}`, { method: 'POST', body: JSON.stringify({ action: b.dataset.act }) });
+              loadQueue(); loadStats();
+            };
+          });
+        } catch (e) { $('#queueBody').innerHTML = `<tr><td colspan="9" class="empty">${esc(e.message)}</td></tr>`; }
+      }
+
+      function loadAll() { loadStats(); loadQueue(); }
+      $('#refreshBtn').onclick = loadAll;
+      loadAll();
+      setInterval(loadQueue, 20000);
+    </script>
+  </body>
+</html>
+

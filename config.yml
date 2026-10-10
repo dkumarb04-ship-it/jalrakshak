@@ -1,0 +1,21 @@
+# JalRakshak — Cloudflare Named Tunnel configuration
+#
+# This file is used by:  cloudflared tunnel run jalrakshak
+# The <TUNNEL-UUID> and credentials file are created by the setup script
+# (cloudflare-named-tunnel.ps1) after you log in and create the tunnel.
+#
+# Replace the two placeholders below if you edit this by hand:
+#   <TUNNEL-UUID>   → the UUID printed by `cloudflared tunnel create`
+#   <TUNNEL-UUID>.json → the credentials file cloudflared writes to ./.cloudflared/
+#
+# `ingress` rules: everything is served by the local JalRakshak server.
+# The last rule (no hostname) is the required catch-all.
+
+tunnel: <TUNNEL-UUID>
+credentials-file: .cloudflared/<TUNNEL-UUID>.json
+
+ingress:
+  - hostname: <YOUR-HOSTNAME>
+    service: http://localhost:3000
+  # Example: add more hostnames (e.g. admin.yourdomain.com) as extra rules above.
+  - service: http://localhost:3000

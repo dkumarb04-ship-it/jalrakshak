@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10272a" />
+    <meta name="description" content="JalRakshak helps Mangaluru residents share and check local flood conditions." />
+    <title>JalRakshak — Mangaluru flood watch</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <div class="brand-name">JalRakshak</div>
+            <div class="brand-subtitle">Mangaluru flood watch</div>
+          </div>
+        </div>
+
+        <div class="sidebar-label">Your watch</div>
+        <nav class="side-nav">
+          <button class="nav-item active" data-nav="overview"><span class="nav-icon">⌂</span><span>Overview</span></button>
+          <button class="nav-item" data-nav="reports"><span class="nav-icon">◉</span><span>Community reports</span><span class="nav-count">12</span></button>
+          <button class="nav-item" data-nav="route"><span class="nav-icon">↗</span><span>Route check</span></button>
+          <button class="nav-item" data-nav="saved"><span class="nav-icon">♡</span><span>Saved places</span></button>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <div class="offline-card">
+          <div class="offline-icon"><span class="pulse-dot"></span></div>
+          <div>
+            <strong>Ready for patchy signal</strong>
+            <p>Last map refresh · 2 min ago</p>
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="avatar">AR</div>
+          <div><strong>Anonymous resident</strong><span>Helping the community</span></div>
+          <button class="icon-button ghost" aria-label="More account options">•••</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="mobile-brand">
+            <div class="brand-mark small" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span>JalRakshak</span>
+          </div>
+          <div class="location-breadcrumb"><span class="location-pin">⌖</span><span>Mangaluru, Karnataka</span><span class="breadcrumb-separator">/</span><span>Saturday, 10 Oct 2026</span></div>
+          <div class="topbar-actions">
+            <button class="status-chip" id="networkStatus"><span class="status-dot"></span>Monsoon mode</button>
+            <button class="icon-button notification-button" aria-label="View notifications"><span class="notification-dot"></span>♧</button>
+            <button class="avatar top-avatar">AR</button>
+          </div>
+        </header>
+
+        <div class="content-wrap">
+          <section class="page-intro">
+            <div>
+              <p class="eyebrow">Saturday · 10 October · 08:42 AM</p>
+              <h1>Stay a step ahead of<br /><em>rising water.</em></h1>
+              <p class="intro-copy">See what your neighbours are seeing, before the road gets difficult.</p>
+            </div>
+            <button class="primary-button report-cta" data-open-report><span class="plus-icon">+</span> Report flooding</button>
+          </section>
+
+          <section class="dashboard-grid">
+            <article class="map-card card" id="mapCard">
+              <div class="card-toolbar">
+                <div>
+                  <div class="card-kicker"><span class="live-pulse"></span> LIVE COMMUNITY MAP</div>
+                  <h2>Conditions around Mangaluru</h2>
+                </div>
+                <button class="map-control" id="locateButton"><span>⌖</span> My area</button>
+              </div>
+              <div class="map-stage" aria-label="Mock map of Mangaluru showing community flood reports">
+                <div class="map-grid"></div>
+                <div class="map-water water-one"></div>
+                <div class="map-water water-two"></div>
+                <div class="map-label label-kottara">Kottara</div>
+                <div class="map-label label-kadri">Kadri</div>
+                <div class="map-label label-bunder">Hampankatta</div>
+                <div class="map-label label-port">Port Road</div>
+                <div class="map-label label-bejai">Bejai</div>
+                <svg class="road-drawing" viewBox="0 0 820 380" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M-40 292 C 130 250, 165 330, 280 258 S 430 102, 586 160 S 710 210, 870 78" />
+                  <path d="M68 -20 C 90 80, 230 112, 284 206 S 408 319, 468 410" />
+                  <path d="M-10 148 C 160 126, 226 176, 344 142 S 585 40, 850 176" />
+                  <path d="M470 -10 C 445 90, 530 125, 535 212 S 500 306, 612 394" />
+                  <path d="M-30 58 C 96 75, 130 38, 248 68 S 430 112, 598 78 S 740 88, 850 136" />
+                  <path class="arterial" d="M-20 212 C 155 210, 210 216, 322 198 S 512 210, 852 282" />
+                </svg>
+                <div class="map-pin pin-amber" data-report="Kulur bridge"><span>!</span><label>Kulur bridge</label></div>
+                <div class="map-pin pin-red" data-report="Kottara junction"><span>!</span><label>Kottara junction</label></div>
+                <div class="map-pin pin-amber pin-small" data-report="Bejai market"><span>!</span></div>
+                <div class="map-pin pin-green pin-small" data-report="Hampankatta"><span>✓</span></div>
+                <div class="map-user"><span></span><b>You</b></div>
+                <div class="map-zoom"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
+                <div class="map-tooltip" id="mapTooltip"><strong>Tap a marker</strong><span>See what neighbours reported nearby.</span></div>
+                <div class="map-summary"><strong><span class="summary-icon">≈</span> 12 active reports</strong><span>updated just now</span></div>
+              </div>
+              <div class="map-footer">
+                <div class="severity-legend"><span>SEVERITY</span><i class="legend-dot green"></i><b>Passable</b><i class="legend-dot amber"></i><b>Caution</b><i class="legend-dot red"></i><b>Avoid</b></div>
+                <button class="text-button" data-nav="reports">View all reports <span>→</span></button>
+              </div>
+            </article>
+
+            <aside class="side-stack">
+              <article class="route-card card" id="routeCard">
+                <div class="route-card-head"><div class="card-kicker">PLAN AHEAD</div><div class="route-icon">↗</div></div>
+                <h2>Check your route</h2>
+                <p>Know before you go. We’ll show reported flooding along the way.</p>
+                <div class="route-fields">
+                  <label class="route-field"><span class="field-dot start"></span><input id="routeFrom" value="Kadri Park" aria-label="Starting point" /></label>
+                  <span class="route-connector"></span>
+                  <label class="route-field"><span class="field-dot end"></span><input id="routeTo" value="Mangaluru Central" aria-label="Destination" /></label>
+                </div>
+                <button class="secondary-button full-width" id="checkRoute">Check route <span>→</span></button>
+                <div class="route-result hidden" id="routeResult"></div>
+              </article>
+
+              <article class="places-card card" id="savedCard">
+                <div class="section-heading"><div><div class="card-kicker">YOUR PLACES</div><h2>Saved places</h2></div><button class="icon-button subtle" aria-label="Add saved place">+</button></div>
+                <div class="place-list">
+                  <button class="place-row" data-place="Home"><span class="place-symbol home">⌂</span><span><strong>Home</strong><small>Attavar · 1.8 km away</small></span><span class="place-status safe">Clear</span></button>
+                  <button class="place-row" data-place="Work"><span class="place-symbol work">▦</span><span><strong>Work</strong><small>Hampankatta · 3.2 km away</small></span><span class="place-status watch">Watch</span></button>
+                  <button class="place-row" data-place="School"><span class="place-symbol school">□</span><span><strong>St. Aloysius</strong><small>Light House Hill</small></span><span class="place-status safe">Clear</span></button>
+                </div>
+                <button class="text-button" id="managePlaces">Manage places <span>→</span></button>
+              </article>
+            </aside>
+          </section>
+
+          <section class="lower-grid">
+            <article class="reports-card card" id="reportsCard">
+              <div class="section-heading reports-heading"><div><div class="card-kicker">FROM YOUR COMMUNITY</div><h2>Recent reports</h2></div><div class="segmented-control"><button class="segment active">Nearby</button><button class="segment">Most confirmed</button></div></div>
+              <div class="report-list" id="reportList"></div>
+              <button class="load-more" id="loadMore">Show 8 more reports <span>↓</span></button>
+            </article>
+
+            <aside class="trust-card">
+              <div class="trust-pattern"></div>
+              <div class="trust-content">
+                <div class="trust-badge">COMMUNITY POWERED</div>
+                <h2>Small updates.<br /><em>Safer decisions.</em></h2>
+                <p>Every confirmation helps a neighbour choose a safer road home.</p>
+                <div class="trust-people"><span class="mini-avatar a1">SK</span><span class="mini-avatar a2">PM</span><span class="mini-avatar a3">NV</span><span class="mini-avatar a4">+</span><span>48 people active nearby</span></div>
+              </div>
+              <div class="trust-footer"><span class="shield-mark">✓</span><span>Community reports are not official warnings. In an emergency, follow local authorities.</span></div>
+            </aside>
+          </section>
+
+          <div class="offline-banner" id="offlineBanner"><span class="offline-banner-icon">↥</span><span><strong>Works offline</strong> · Reports made without signal are queued and sent when you’re back online.</span><button class="banner-close" aria-label="Dismiss offline message">×</button></div>
+        </div>
+      </main>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button class="mobile-nav-item active" data-nav="overview"><span>⌂</span><small>Overview</small></button>
+      <button class="mobile-nav-item" data-nav="reports"><span>◉</span><small>Reports</small></button>
+      <button class="mobile-nav-report" data-open-report><span>+</span><small>Report</small></button>
+      <button class="mobile-nav-item" data-nav="route"><span>↗</span><small>Route</small></button>
+      <button class="mobile-nav-item" data-nav="saved"><span>♡</span><small>Places</small></button>
+    </nav>
+
+    <div class="modal-backdrop hidden" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <div class="report-modal">
+        <button class="modal-close" data-close-report aria-label="Close report dialog">×</button>
+        <div class="modal-progress"><span class="active"></span><span></span><span></span></div>
+        <div id="reportStepSafety" class="modal-step active-step">
+          <div class="safety-illustration"><span>⌁</span><i>!</i></div>
+          <div class="modal-kicker">BEFORE YOU REPORT</div>
+          <h2 id="reportTitle">Your safety comes first.</h2>
+          <p>Please report from a safe place. <strong>Never wade into floodwater or stop in moving traffic to take a photo.</strong></p>
+          <div class="safety-check"><span>✓</span><span>I’m in a safe place and ready to share what I can see.</span></div>
+          <button class="primary-button full-width" id="continueReport">I’m safe — continue <span>→</span></button>
+          <button class="quiet-button" data-close-report>Not right now</button>
+        </div>
+        <div id="reportStepForm" class="modal-step">
+          <div class="modal-kicker">QUICK REPORT · 20 SEC</div>
+          <h2>What’s happening here?</h2>
+          <p class="modal-intro">A rough location is enough. You can edit it before sharing.</p>
+          <div class="photo-dropzone" id="photoDropzone"><span class="camera-icon">⌑</span><div><strong>Add a photo</strong><small>Optional · helps others understand</small></div><span class="dropzone-arrow">+</span></div>
+          <label class="form-label">LOCATION <span>Auto-detected</span><div class="location-input"><span>⌖</span><input id="reportLocation" value="Near Kadri Park" /><button aria-label="Edit location">✎</button></div></label>
+          <fieldset class="form-group"><legend>WATER LEVEL</legend><div class="depth-grid"><button class="depth-option" data-depth="Ankle deep">Ankle</button><button class="depth-option active" data-depth="Knee deep">Knee</button><button class="depth-option" data-depth="Waist deep">Waist</button><button class="depth-option" data-depth="Vehicles stall">Vehicles stall</button><button class="depth-option" data-depth="Impassable">Impassable</button></div></fieldset>
+          <div class="form-row"><button class="voice-button" id="voiceButton"><span>◖</span><span><strong>Add voice note</strong><small>Tap to record</small></span><span class="voice-time">0:00</span></button><label class="toggle-row"><span><strong>Road blocked</strong><small>Can vehicles pass?</small></span><input type="checkbox" id="blockedToggle" /><span class="toggle-ui"></span></label></div>
+          <label class="form-label">NOTE <span>Optional</span><textarea id="reportNote" placeholder="Anything neighbours should know?"></textarea></label>
+          <button class="primary-button full-width" id="submitReport">Add to offline queue <span>↥</span></button>
+          <button class="quiet-button" data-back-safety>Back</button>
+        </div>
+        <div id="reportStepDone" class="modal-step">
+          <div class="done-illustration"><span>✓</span></div>
+          <div class="modal-kicker">REPORT QUEUED</div>
+          <h2>Thanks for looking out.</h2>
+          <p>Your report is saved on this device and will appear here once it syncs. No account needed.</p>
+          <div class="queue-status"><span class="pulse-dot"></span><strong>Waiting for a connection</strong><small>It’s safe to close this window.</small></div>
+          <button class="primary-button full-width" data-close-report>Back to the map</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast hidden" id="toast"><span class="toast-mark">✓</span><span id="toastMessage">Saved on this device</span></div>
+    <script src="/api.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

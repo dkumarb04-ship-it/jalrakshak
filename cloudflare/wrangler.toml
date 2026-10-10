@@ -1,0 +1,21 @@
+name = "jalrakshak"
+main = "src/worker.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets: serve the built front-end from /public (assets-first routing,
+# so only /api/* + /uploads/* reach the Worker).
+[assets]
+directory = "../public"
+binding = "ASSETS"
+not_found_handling = "404-page"
+
+# D1 database (structured data + photos). `database_id` is omitted so wrangler
+# auto-provisions the database on first deploy.
+[[d1_databases]]
+binding = "DB"
+database_name = "jalrakshak"
+
+[vars]
+ADMIN_TOKEN = "admin-dev-token"
+CITY = "Mangaluru"

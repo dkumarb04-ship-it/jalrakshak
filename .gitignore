@@ -1,0 +1,59 @@
+# Dependencies (none required — zero-dependency backend), but ignore if added
+node_modules/
+
+# Local database + uploads (generated at runtime)
+data/*.db
+data/*.db-shm
+data/*.db-wal
+uploads/*
+!uploads/.gitkeep
+
+# Cloudflare quick-tunnel runtime artifacts
+cloudflared.exe
+tunnel.log
+tunnel.err
+tunnelstatus.txt
+public-url.txt
+publiccheck.txt
+cfcheck.txt
+cfver.txt
+run.log
+run.err
+
+# Test / build artifacts
+load-report.txt
+*.log
+lt.txt
+test.out
+
+# Cloudflare Wrangler build/state (generated)
+.wrangler/
+cloudflare/dist/
+cloudflare/node_modules/
+
+# Local diagnostics / scratch (not source)
+cf-diag2.txt
+wcheck.txt
+whoami.txt
+wv.txt
+login.err
+login.log
+inst.txt
+npmver.txt
+npm-install.log
+diag.txt
+dryrun.txt
+dverr.txt
+devout.txt
+devoutx.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env
+.env
+.env.local
+
